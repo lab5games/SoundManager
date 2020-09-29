@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Lab5Games
 {
@@ -9,9 +10,16 @@ namespace Lab5Games
      * */
     public class SoundManager : MonoBehaviour
     {
-        public float volume = 1f;
+        public enum EVolumeTypes
+        {
+            Master      = 0,
+            Music       = 1,
+            Effects     = 2
+        }
 
         private float _dt;
+
+        private AudioMixer _audioMixer;
 
         private List<USound> _playingSounds = new List<USound>(MAX_SOUNDS);
         private List<USound> _avaliableSounds = new List<USound>(MAX_SOUNDS);
@@ -19,6 +27,16 @@ namespace Lab5Games
         public USound BGM { get; private set; }
 
         public const int MAX_SOUNDS = 8;
+
+        public void SetVolume(EVolumeTypes type, float volume)
+        {
+            _audioMixer.SetFloat(type.ToString(), Mathf.Log(Remap(volume, 0f, 1f, -80f, 0f)) * 20f);
+        }
+
+        private float Remap(float s, float a1, float a2, float b1, float b2)
+        {
+            return b1 + (s - a1) * (b2 - b1) / (a2 - a1);
+        }
 
         public void ClearSounds()
         {
@@ -40,9 +58,11 @@ namespace Lab5Games
         public USound PlayBGM(AudioClip clip, float volume)
         {
             if (BGM == null)
-                BGM = new USound(gameObject.AddComponent<AudioSource>());
+            {
+                BGM = new USound(CreateNewAudioSource(EVolumeTypes.Music));
+            }
 
-            BGM.Play(clip, volume * this.volume, 1, 0, true);
+            BGM.Play(clip, volume, 1, 0, true);
 
             return BGM;
         }
@@ -61,7 +81,7 @@ namespace Lab5Games
         {
             USound sound = GetAvaliableSound();
 
-            sound.Play(clip, volume * this.volume, pitch, pan, loop);
+            sound.Play(clip, volume, pitch, pan, loop);
 
             return sound;
         }
@@ -102,12 +122,20 @@ namespace Lab5Games
 
             if(sound == null)
             {
-                sound = new USound(gameObject.AddComponent<AudioSource>());
+                sound = new USound(CreateNewAudioSource(EVolumeTypes.Effects));
             }
 
             _playingSounds.Add(sound);
 
             return sound;
+        }
+
+        private AudioSource CreateNewAudioSource(EVolumeTypes type)
+        {
+            AudioSource src = gameObject.AddComponent<AudioSource>();
+            src.outputAudioMixerGroup = _audioMixer.FindMatchingGroups("Master")[(int)type];
+
+            return src;
         }
 
 
@@ -124,7 +152,7 @@ namespace Lab5Games
 
                 if (_instance == null)
                 {
-                    GameObject go = new GameObject("[Singleton] SoundManager");
+                    GameObject go = new GameObject("SoundManager");
                     _instance = go.AddComponent<SoundManager>();
                 }
 
@@ -134,17 +162,25 @@ namespace Lab5Games
 
         private void Awake()
         {
-            if (_instance == null)
+            if (_instance != null)
+            {
+                Destroy(this);
+            }
+            else
+            {
                 _instance = this;
 
-            DontDestroyOnLoad(gameObject);
+                DontDestroyOnLoad(gameObject);
+            }
         }
 
         private void Start()
         {
-            for(int i=0; i<_avaliableSounds.Count; i++)
+            _audioMixer = Resources.Load<AudioMixer>("SoundManager");
+
+            for(int i=0; i<MAX_SOUNDS; i++)
             {
-                _avaliableSounds.Add(new USound(gameObject.AddComponent<AudioSource>()));
+                _avaliableSounds.Add(new USound(CreateNewAudioSource(EVolumeTypes.Effects)));
             }
         }
 
@@ -168,6 +204,7 @@ namespace Lab5Games
         {
             _instance = null;
 
+            _audioMixer = null;
             _playingSounds = null;
             _avaliableSounds = null;
         }
