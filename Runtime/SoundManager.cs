@@ -20,6 +20,17 @@ namespace Lab5Games
         private float _dt;
 
         private AudioMixer _audioMixer;
+        
+        public AudioMixer audioMixer
+        {
+            get
+            {
+                if (_audioMixer == null)
+                    _audioMixer = Resources.Load<AudioMixer>("SoundManager");
+
+                return _audioMixer;
+            }
+        }
 
         private List<USound> _playingSounds = new List<USound>(MAX_SOUNDS);
         private List<USound> _avaliableSounds = new List<USound>(MAX_SOUNDS);
@@ -30,7 +41,7 @@ namespace Lab5Games
 
         public void SetVolume(EVolumeTypes type, float volume)
         {
-            _audioMixer.SetFloat(type.ToString(), Mathf.Log(Remap(volume, 0f, 1f, -80f, 0f)) * 20f);
+            audioMixer.SetFloat(type.ToString(), Mathf.Log(Remap(volume, 0f, 1f, -80f, 0f)) * 20f);
         }
 
         private float Remap(float s, float a1, float a2, float b1, float b2)
@@ -133,7 +144,7 @@ namespace Lab5Games
         private AudioSource CreateNewAudioSource(EVolumeTypes type)
         {
             AudioSource src = gameObject.AddComponent<AudioSource>();
-            src.outputAudioMixerGroup = _audioMixer.FindMatchingGroups("Master")[(int)type];
+            src.outputAudioMixerGroup = audioMixer.FindMatchingGroups("Master")[(int)type];
 
             return src;
         }
@@ -169,8 +180,6 @@ namespace Lab5Games
 
         private void Start()
         {
-            _audioMixer = Resources.Load<AudioMixer>("SoundManager");
-
             for(int i=0; i<MAX_SOUNDS; i++)
             {
                 _avaliableSounds.Add(new USound(CreateNewAudioSource(EVolumeTypes.Effects)));
