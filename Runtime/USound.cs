@@ -24,7 +24,7 @@ namespace Lab5Games
         {
             source.Stop();
 
-            SoundManager.instance.RecycleSound(this);
+            SoundManager.Instance.RecycleSound(this);
         }
 
         public void Play(AudioClip clip, float volume, float pitch, float pan, bool loop)

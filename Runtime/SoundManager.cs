@@ -152,10 +152,16 @@ namespace Lab5Games
 
         private static SoundManager _instance = null;
 
-        public static SoundManager instance
+        public static SoundManager Instance
         {
             get
             {
+                if(_quit)
+                {
+                    Debug.LogWarning("The application is quit.");
+                    return null;
+                }
+
                 if (_instance == null)
                 {
                     _instance = FindObjectOfType<SoundManager>();
@@ -209,6 +215,13 @@ namespace Lab5Games
             _audioMixer = null;
             _playingSounds = null;
             _avaliableSounds = null;
+        }
+
+        private static bool _quit = false;
+
+        private void OnApplicationQuit()
+        {
+            _quit = true;
         }
     }
 }
