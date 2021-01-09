@@ -1,6 +1,8 @@
 {
     "name": "SoundManager",
-    "references": [],
+    "references": [
+        "GUID:afb8987d871b96f42be79bcbee5ef7a2"
+    ],
     "includePlatforms": [
         "Android",
         "Editor",

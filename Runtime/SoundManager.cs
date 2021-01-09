@@ -8,7 +8,7 @@ namespace Lab5Games
     /*
      * https://github.com/prime31/SoundKit
      * */
-    public class SoundManager : MonoBehaviour
+    public class SoundManager : Singleton<SoundManager>
     {
         public enum EVolumeTypes
         {
@@ -16,8 +16,6 @@ namespace Lab5Games
             Music       = 1,
             Effects     = 2
         }
-
-        private float _dt;
 
         private AudioMixer _audioMixer;
         
@@ -148,39 +146,9 @@ namespace Lab5Games
 
             return src;
         }
-
-
-        private static SoundManager _instance = null;
-
-        public static SoundManager Instance
-        {
-            get
-            {
-                if(_quit)
-                {
-                    Debug.LogWarning("The application is quit.");
-                    return null;
-                }
-
-                if (_instance == null)
-                {
-                    _instance = FindObjectOfType<SoundManager>();
-                }
-
-                if (_instance == null)
-                {
-                    GameObject go = new GameObject("SoundManager");
-                    _instance = go.AddComponent<SoundManager>();
-                }
-
-                return _instance;
-            }
-        }
-
+        
         private void Awake()
         {
-            _instance = this;
-
             DontDestroyOnLoad(gameObject);
         }
 
@@ -208,20 +176,13 @@ namespace Lab5Games
             }
         }
 
-        private void OnDestroy()
+        protected override void OnDestroy()
         {
-            _instance = null;
+            base.OnDestroy();
 
             _audioMixer = null;
             _playingSounds = null;
             _avaliableSounds = null;
-        }
-
-        private static bool _quit = false;
-
-        private void OnApplicationQuit()
-        {
-            _quit = true;
         }
     }
 }
