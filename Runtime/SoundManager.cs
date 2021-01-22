@@ -65,6 +65,12 @@ namespace Lab5Games
 
         public USound PlayBGM(AudioClip clip, float volume)
         {
+            if (clip == null)
+            {
+                DebugEx.Log(ELogType.Warning, "SoundManager: Failed to play BGM, clip is null.");
+                return null;
+            }
+
             if (BGM == null)
             {
                 BGM = new USound(CreateNewAudioSource(EVolumeTypes.Music));
@@ -87,6 +93,12 @@ namespace Lab5Games
 
         public USound PlaySound(AudioClip clip, float volume, float pitch, float pan, bool loop)
         {
+            if (clip == null)
+            {
+                DebugEx.Log(ELogType.Warning, "SoundManager: Failed to play sound, clip is null.");
+                return null;
+            }
+
             USound sound = GetAvaliableSound();
 
             if (sound != null)
@@ -99,7 +111,8 @@ namespace Lab5Games
 
         public void RecycleSound(USound sound)
         {
-            if (sound.Equals(BGM)) return;
+            if (sound.Equals(BGM)) 
+                return;
 
             for(int i=0; i<_playingSounds.Count; i++)
             {
