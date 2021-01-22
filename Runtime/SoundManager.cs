@@ -18,7 +18,8 @@ namespace Lab5Games
         }
 
         [SerializeField] private AudioMixer _audioMixer;
-        [SerializeField] private int _maxSounds = 8;
+        [SerializeField] private int _maxSrcCount = 8;
+        [SerializeField] private bool _autoIncreaseSrc = true;
 
         public AudioMixer audioMixer
         {
@@ -91,7 +92,10 @@ namespace Lab5Games
         {
             USound sound = GetAvaliableSound();
 
-            sound.Play(clip, volume, pitch, pan, loop);
+            if (sound != null)
+            {
+                sound.Play(clip, volume, pitch, pan, loop);
+            }
 
             return sound;
         }
@@ -109,7 +113,7 @@ namespace Lab5Games
                 }
             }
 
-            if((_avaliableSounds.Count + _playingSounds.Count) > _maxSounds)
+            if((_avaliableSounds.Count + _playingSounds.Count) > _maxSrcCount)
             {
                 Destroy(sound.source);
             }
@@ -130,12 +134,15 @@ namespace Lab5Games
                 _avaliableSounds.RemoveAt(lastIndx);
             }
 
-            if(sound == null)
+            if(sound == null && _autoIncreaseSrc)
             {
                 sound = new USound(CreateNewAudioSource(EVolumeTypes.Effects));
             }
 
-            _playingSounds.Add(sound);
+            if (sound != null)
+            {
+                _playingSounds.Add(sound);
+            }
 
             return sound;
         }
@@ -150,15 +157,15 @@ namespace Lab5Games
         
         private void Awake()
         {
-            _playingSounds = new List<USound>(_maxSounds);
-            _avaliableSounds = new List<USound>(_maxSounds);
+            _playingSounds = new List<USound>(_maxSrcCount);
+            _avaliableSounds = new List<USound>(_maxSrcCount);
 
             DontDestroyOnLoad(gameObject);
         }
 
         private void Start()
         {
-            for(int i=0; i<_maxSounds; i++)
+            for(int i=0; i<_maxSrcCount; i++)
             {
                 _avaliableSounds.Add(new USound(CreateNewAudioSource(EVolumeTypes.Effects)));
             }
