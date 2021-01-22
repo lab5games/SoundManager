@@ -17,8 +17,9 @@ namespace Lab5Games
             Effects     = 2
         }
 
-        private AudioMixer _audioMixer;
-        
+        [SerializeField] private AudioMixer _audioMixer;
+        [SerializeField] private int _maxSounds = 8;
+
         public AudioMixer audioMixer
         {
             get
@@ -30,12 +31,12 @@ namespace Lab5Games
             }
         }
 
-        private List<USound> _playingSounds = new List<USound>(MAX_SOUNDS);
-        private List<USound> _avaliableSounds = new List<USound>(MAX_SOUNDS);
+        private List<USound> _playingSounds;
+        private List<USound> _avaliableSounds;
 
         public USound BGM { get; private set; }
 
-        public const int MAX_SOUNDS = 8;
+        
 
         public void SetVolume(EVolumeTypes type, float volume)
         {
@@ -108,7 +109,7 @@ namespace Lab5Games
                 }
             }
 
-            if((_avaliableSounds.Count + _playingSounds.Count) > MAX_SOUNDS)
+            if((_avaliableSounds.Count + _playingSounds.Count) > _maxSounds)
             {
                 Destroy(sound.source);
             }
@@ -149,12 +150,15 @@ namespace Lab5Games
         
         private void Awake()
         {
+            _playingSounds = new List<USound>(_maxSounds);
+            _avaliableSounds = new List<USound>(_maxSounds);
+
             DontDestroyOnLoad(gameObject);
         }
 
         private void Start()
         {
-            for(int i=0; i<MAX_SOUNDS; i++)
+            for(int i=0; i<_maxSounds; i++)
             {
                 _avaliableSounds.Add(new USound(CreateNewAudioSource(EVolumeTypes.Effects)));
             }
