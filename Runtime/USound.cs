@@ -23,6 +23,7 @@ namespace Lab5Games
         public void Stop()
         {
             source.Stop();
+            source.clip = null;
 
             SoundManager.Instance.RecycleSound(this);
         }
