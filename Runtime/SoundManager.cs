@@ -25,9 +25,6 @@ namespace Lab5Games
         {
             get
             {
-                if (_audioMixer == null)
-                    _audioMixer = Resources.Load<AudioMixer>("SoundManager");
-
                 return _audioMixer;
             }
         }
@@ -150,7 +147,11 @@ namespace Lab5Games
         private AudioSource CreateNewAudioSource(EVolumeTypes type)
         {
             AudioSource src = gameObject.AddComponent<AudioSource>();
-            src.outputAudioMixerGroup = audioMixer.FindMatchingGroups("Master")[(int)type];
+
+            if (_audioMixer != null)
+            {
+                src.outputAudioMixerGroup = audioMixer.FindMatchingGroups("Master")[(int)type];
+            }
 
             return src;
         }
