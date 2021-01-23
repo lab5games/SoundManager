@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
+using Lab5Games.Lab5GamesKit;
 
-namespace Lab5Games
+namespace Lab5Games.Audio
 {
     /*
      * https://github.com/prime31/SoundKit

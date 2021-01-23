@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Lab5Games
+namespace Lab5Games.Audio
 {
     public class USound
     {
